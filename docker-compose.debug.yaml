@@ -44,7 +44,7 @@ services:
     expose:
       - 443
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=development # Change in prod
       - SSL_CERT_FILE=/ssl/localhost_cert.pem  # Change in prod
       - SSL_KEY_FILE=/ssl/localhost_key.pem  # Change in prod
     command: "npm test"
