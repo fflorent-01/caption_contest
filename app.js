@@ -18,23 +18,25 @@ const flash = require('connect-flash')
 
 // Security imports
 const helmet = require('helmet')
+const helmetConfig = require('./config/helmet')
 const session = require('express-session')
 const sessionConfig = require('./config/session')
 const passport = require('passport')
 const passportConfig = require('./config/passport')
 
 
+// Custom middleware
+const isAuthenticated = require('./middleware/authentication')
+
 /**
  * LOAD DATABASE
 */
-
-const db = require('./database/models/index.js')
-
+const db = require('./database/models/index')
 // Test database connection
 db.sequelize
   .authenticate()
   .then(() => {
-    console.log(`Connection has been established successfully to *${process.env.DEV_DATABASE_NAME}*.`);
+    console.log(`Connection has been established successfully to *${process.env.DEV_DB_NAME}*.`);
   })
   .catch(err => {
     console.error('Unable to connect to the database:', err);
@@ -67,23 +69,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
 // Load security middleware
-app.use(helmet())
-app.use(helmet.contentSecurityPolicy({
-    directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-            "'self'", 
-            "https://cdn.jsdelivr.net/npm/", 
-            "https://code.jquery.com/",
-        ],
-        styleSrc: [
-            "'self'", 
-            "https://cdn.jsdelivr.net/npm/", 
-            "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/",
-        ],
-    }
-})
-)
+app.use(helmet(helmetConfig))
 
 /**
  * SESSION AUTHENTICATION
@@ -95,37 +81,28 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
-const isAuthenticated = (req, res, next) => {
-    if ( req.isAuthenticated() ) {
-      next()
-    } else {
-      res.redirect('/login')
-    }
-}
-
-
 /**
 * ROUTERS
 */
+// Entry routes
 app.get('/', isAuthenticated, (req, res) => {
   res.redirect('/home')
 })
-
-app.get('/home', (req, res) => {
+app.get('/home', isAuthenticated, (req, res) => {
   res.render('home', {user: req.user.username,})
 })
 
 
 // Register router
-const registerRouter = require('./routes/register.js')
+const registerRouter = require('./routes/register')
 app.use('/register', registerRouter)
 
 // Login router
-const loginRouter = require('./routes/login.js')
+const loginRouter = require('./routes/login')
 app.use('/login', loginRouter)
 
 // Logout router
-const logoutRouter = require('./routes/logout.js')
+const logoutRouter = require('./routes/logout')
 app.use('/logout', logoutRouter)
 
 
