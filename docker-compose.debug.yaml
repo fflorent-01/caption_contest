@@ -1,0 +1,63 @@
+services:
+  postgres:
+    container_name: postgres-db
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB : caption_contest  # Change in prod
+      POSTGRES_USER: app_manager  # Change in prod
+      POSTGRES_PASSWORD: M^n2AqDqyUMu=FB+  # Change in prod
+    ports:
+      - 8484:5432  # Change in prod
+    expose:
+      - 5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  # Remove from docker-compose.yaml in production
+  postgres-test:
+    container_name: postgres-db-test
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB : caption_contest_test
+      POSTGRES_USER: app_manager
+      POSTGRES_PASSWORD: M^n2AqDqyUMu=FB+
+    ports:
+      - 6464:5432
+    expose:
+      - 5432
+    volumes:
+      - db-data-test:/var/lib/postgresql/data
+
+  app:
+    container_name: caption-contest-app
+    image: node:18
+    user: node
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ./certs:/ssl
+    ports:
+      - 443  # Change in prod
+      - 3000:443
+    expose:
+      - 443
+    environment:
+      - NODE_ENV=development
+      - SSL_CERT_FILE=/ssl/localhost_cert.pem  # Change in prod
+      - SSL_KEY_FILE=/ssl/localhost_key.pem  # Change in prod
+    command: "npm test"
+    depends_on:
+      - postgres
+      - postgres-test
+    networks:
+      - default
+
+networks:
+  default:
+      name: app-network
+
+volumes:
+  db-data:
+  db-data-test: # Remove from docker-compose.yaml in production

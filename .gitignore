@@ -1,0 +1,11 @@
+# Environment files
+.env
+docker-compose.yaml
+
+# SSL certificates
+certs/*
+!certs/.gitkeep
+
+# Dependencies
+node_modules/
+.vscode/

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Photo caption contest - Home</title>
+  <%- include('./partials/head'); %>
+</head>
+
+<body class="container">
+
+<header>
+  <%- include('./partials/header'); %>
+</header>
+
+<main>
+  <div class="jumbotron">
+    <h1 class="text-center mt-5">Welcome to the photo caption contest<% if (user) { %> <%= user %><% } %>!</h1>
+  </div>
+</main>
+
+<footer>
+  <%- include('./partials/footer'); %>
+</footer>
+
+</body>
+</html>
