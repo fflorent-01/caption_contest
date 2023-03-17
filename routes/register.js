@@ -1,19 +1,25 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 const db = require('../database/models/index.js')
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt')
+const { isNotAuthenticated } = require('../middleware/authentication')
+const { body, validationResult } = require('express-validator')
 
-router.route('/')
-    .all((req, res, next) => {
-        if ( req.isAuthenticated() ) {
-            res.redirect('/home')
-        }
-        next()
-    })
+router.route('/').all(isNotAuthenticated)
     .get((req, res) => {
         res.render('pages/register')
     })
-    .post(async (req, res) => {
+    .post(
+        [
+            body('username')
+                .trim()
+                .escape()
+                .not()
+                .isEmpty()
+                .withMessage('You must provide a username.')
+                
+        ],
+        async (req, res) => {
         // TODO: Add validators
 
         const { username, email, password, confirmPassword, ToS } = req.body

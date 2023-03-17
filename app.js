@@ -18,15 +18,15 @@ const flash = require('connect-flash')
 
 // Security imports
 const helmet = require('helmet')
-const helmetConfig = require('./config/helmet')
+const helmetConfig = require('./middleware/config/helmet')
 const session = require('express-session')
-const sessionConfig = require('./config/session')
+const sessionConfig = require('./middleware/config/session')
 const passport = require('passport')
-const passportConfig = require('./config/passport')
+const passportConfig = require('./middleware/config/passport')
 
 
 // Custom middleware
-const isAuthenticated = require('./middleware/authentication')
+const { isAuthenticated } = require('./middleware/authentication')
 
 /**
  * LOAD DATABASE
@@ -67,6 +67,7 @@ app.use(express.static(path.join(__dirname, "static")))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
+
 
 // Load security middleware
 app.use(helmet(helmetConfig))
