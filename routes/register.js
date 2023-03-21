@@ -1,20 +1,49 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 const db = require('../database/models/index.js')
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt')
+const { isNotAuthenticated } = require('../middleware/authentication')
+const { body, validationResult } = require('express-validator')
 
-router.route('/')
-    .all((req, res, next) => {
-        if ( req.isAuthenticated() ) {
-            res.redirect('/home')
-        }
-        next()
-    })
+router.route('/').all(isNotAuthenticated)
     .get((req, res) => {
-        res.render('pages/register')
+        res.render('pages/register',  { messages: req.flash() })
     })
-    .post(async (req, res) => {
-        // TODO: Add validators
+    .post(
+        [
+            body('username')
+                .trim()
+                .escape()
+                .not()
+                .isEmpty()
+                .withMessage('You must provide a username.')
+                .isLength({min: 8})
+                .withMessage('Username must have at least 8 characters.'),
+            body('email')
+                .isEmail()
+                .normalizeEmail()
+                .withMessage('You did not provide a valid email.'),
+            body(['password', 'confirmPassword'])
+                .trim()
+                .escape()
+                .not()
+                .isEmpty()
+                .withMessage('You must provide a password and confirm it.')
+                .isLength({min: 8})
+                .withMessage('Password must have at least 8 characters.')
+        ],
+        (req, res, next) => {
+            console.log(req.body.username)
+            const errors = validationResult(req)
+            if (!errors.isEmpty()) {
+                req.flash('errors', errors.array().map(element => {
+                    return element.msg
+                }))
+                return res.status(400).redirect('/register')
+            }
+            next()
+        },
+        async (req, res) => {
 
         const { username, email, password, confirmPassword, ToS } = req.body
         const errorMessage = {};

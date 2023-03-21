@@ -1,6 +1,6 @@
 const session = require('express-session')
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
-const db = require('../database/models/index.js')
+const db = require('../../database/models/index.js')
 
 const sessionConfig = {
     secret: process.env.SESSION_SECRET,
