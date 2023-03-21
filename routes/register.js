@@ -7,7 +7,7 @@ const { body, validationResult } = require('express-validator')
 
 router.route('/').all(isNotAuthenticated)
     .get((req, res) => {
-        res.render('pages/register')
+        res.render('pages/register',  { messages: req.flash() })
     })
     .post(
         [
@@ -17,10 +17,33 @@ router.route('/').all(isNotAuthenticated)
                 .not()
                 .isEmpty()
                 .withMessage('You must provide a username.')
-                
+                .isLength({min: 8})
+                .withMessage('Username must have at least 8 characters.'),
+            body('email')
+                .isEmail()
+                .normalizeEmail()
+                .withMessage('You did not provide a valid email.'),
+            body(['password', 'confirmPassword'])
+                .trim()
+                .escape()
+                .not()
+                .isEmpty()
+                .withMessage('You must provide a password and confirm it.')
+                .isLength({min: 8})
+                .withMessage('Password must have at least 8 characters.')
         ],
+        (req, res, next) => {
+            console.log(req.body.username)
+            const errors = validationResult(req)
+            if (!errors.isEmpty()) {
+                req.flash('errors', errors.array().map(element => {
+                    return element.msg
+                }))
+                return res.status(400).redirect('/register')
+            }
+            next()
+        },
         async (req, res) => {
-        // TODO: Add validators
 
         const { username, email, password, confirmPassword, ToS } = req.body
         const errorMessage = {};

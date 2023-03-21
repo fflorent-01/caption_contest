@@ -23,9 +23,13 @@
                 <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                   <!-- Title -->
                   <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
-                    <%if ( typeof messages !== "undefined" && messages.error) {%>
+                  <%if ( typeof messages !== 'undefined' && messages.errors ) {%>
                     <div class="alert alert-danger" role="alert">
-                      <%= messages.error %>
+                      <ul>
+                        <% messages.errors.forEach(error => { %>
+                          <li><%= error %></li>
+                        <% }) %>
+                      </ul>
                     </div>
                   <% }%>
                   <!-- Form -->
@@ -36,7 +40,7 @@
                       <div class="form-outline flex-fill mb-0">
                         <label class="form-label" for="username">Username</label>
                         <input type="text" id="username" name="username" class="form-control" 
-                               placeholder="Username" required/>
+                               placeholder="Username" minlength="8" required/>
                         <%if ( typeof errorMessage !== "undefined" && errorMessage.username) {%>
                           <div class="error-message"><%= errorMessage.username %></div>
                         <% }%>
@@ -60,7 +64,7 @@
                       <div class="form-outline flex-fill mb-0">
                         <label class="form-label" for="password">Password</label>
                         <input type="password" id="password" name="password" class="form-control"
-                               placeholder="Your password" required />
+                               placeholder="Your password" minlength="8" required />
                       </div>
                     </div>
                     <!-- Repeat Password -->
@@ -69,7 +73,7 @@
                       <div class="form-outline flex-fill mb-0">
                         <label class="form-label" for="confirmPassword">Repeat password</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
-                               placeholder="Your password" required/>
+                               placeholder="Your password" minlength="8" required/>
                         <%if ( typeof errorMessage !== "undefined" && errorMessage.password) {%>
                           <div class="error-message"><%= errorMessage.password %></div>
                          <% }%>

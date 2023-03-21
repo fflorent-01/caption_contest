@@ -15,19 +15,21 @@ router.route('/').all(isNotAuthenticated)
                 .trim()
                 .not()
                 .isEmpty()
-                .isString(),
+                .isString()
+                .escape(),
             body('password')
                 .trim()
                 .not()
                 .isEmpty()
+                .escape()
         ],
         (req, res, next) => {
             const errors = validationResult(req)
             if (!errors.isEmpty()) {
-                req.flash('error', errors.array().map(element => {
+                req.flash('errors', errors.array().map(element => {
                     return `${element.msg} for ${element.param}`
                 }))
-                return res.redirect('/login')
+                return res.status(400).redirect('/login')
             }
             next()
         },
