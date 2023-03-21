@@ -2,6 +2,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 
 module.exports = function(passport, User) {
+
     // LocalStrategy
     passport.use(new LocalStrategy({ usernameField: 'username', passwordField: 'password' },
         (username, password, done) => {
@@ -24,10 +25,12 @@ module.exports = function(passport, User) {
             }).catch(err => done(err))
         })
     )
+
     // Serializer
     passport.serializeUser((user, done) => {
         done(null, user.id)
     })
+
     // Deserializer
     passport.deserializeUser((id, done) => {
         User.findByPk(id)

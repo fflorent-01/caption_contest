@@ -4,7 +4,6 @@
 
 // General import
 require('dotenv').config()
-
 const path = require('path')
 const https = require('https')
 const fs = require('fs')
@@ -24,14 +23,15 @@ const sessionConfig = require('./middleware/config/session')
 const passport = require('passport')
 const passportConfig = require('./middleware/config/passport')
 
-
 // Custom middleware
 const { isAuthenticated } = require('./middleware/authentication')
+
 
 /**
  * LOAD DATABASE
 */
 const db = require('./database/models/index')
+
 // Test database connection
 db.sequelize
   .authenticate()
@@ -41,13 +41,14 @@ db.sequelize
   .catch(err => {
     console.error('Unable to connect to the database:', err);
   });
+
 // Sync database
 if ( process.env.NODE_ENV === 'development' ) {
   db.sequelize.sync({alter: true})
     .then(() => console.log("Sync Complete"))
     .catch(err => console.error('Unable to sync to the database:', err))
 }
- // Would preferably use migration in production
+// Would preferably use migration in production
 
 
 /**
@@ -68,9 +69,9 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
-
 // Load security middleware
 app.use(helmet(helmetConfig))
+
 
 /**
  * SESSION AUTHENTICATION
@@ -85,6 +86,7 @@ app.use(passport.session())
 /**
 * ROUTERS
 */
+
 // Entry routes
 app.get('/', isAuthenticated, (req, res) => {
   res.redirect('/home')
@@ -92,7 +94,6 @@ app.get('/', isAuthenticated, (req, res) => {
 app.get('/home', isAuthenticated, (req, res) => {
   res.render('home', {user: req.user.username,})
 })
-
 
 // Register router
 const registerRouter = require('./routes/register')
